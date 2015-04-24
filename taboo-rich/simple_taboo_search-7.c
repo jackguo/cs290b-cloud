@@ -283,10 +283,15 @@ main(int argc,char *argv[])
 		 * notice the indices
 		 */
 		best_count = BIGCOUNT;
+                int rand_int;
+                
 		for(i=0; i < gsize; i++)
 		{
 			for(j=i+1; j < gsize; j++)
 			{
+                          rand_int = rand() % 2;
+                          if (rand_int == 0) {
+                            
 				/*
 				 * flip it
 				 */
@@ -309,6 +314,8 @@ main(int argc,char *argv[])
 				 * flip it back
 				 */
 				g[i*gsize+j] = 1 - g[i*gsize+j];
+                          }
+                          
 			}
 		}
 
