@@ -9,8 +9,11 @@ make_proc.communicate()
 
 exec_dir = os.getcwd()
 
-os.mkdir(os.path.expanduser("~/benchmark"))
-os.chdir(os.path.expanduser("~/benchmark"))
+benchmark = os.path.expanduser("~/benchmark")
+if not os.path.isdir(benchmark):
+  os.mkdir(benchmark)
+
+os.chdir(benchmark)
 
 max_size = 80
 condor_job = """Universe     = vanilla
