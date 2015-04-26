@@ -180,6 +180,7 @@ main(int argc,char *argv[])
 	int best_j;
 	void *taboo_list;
 	int max_size = atoi(argv[1]);
+        srand(time(0));
 
 	/*
 	 * start with graph of size 8
