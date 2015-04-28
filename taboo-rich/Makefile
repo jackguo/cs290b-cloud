@@ -1,4 +1,4 @@
-CC = gcc
+CC =condor_compile gcc
 TOP = .
 INCLUDES = -I$(TOP)
 CFLAGS = -g 
