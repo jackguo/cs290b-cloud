@@ -1,8 +1,10 @@
-CC =condor_compile gcc
+CC = gcc
+CPP = g++
 TOP = .
 INCLUDES = -I$(TOP)
 CFLAGS = -g 
 COMPILE = $(CC) $(INCLUDES) $(CFLAGS)
+COMPILE_CPP = $(CPP) $(INCLUDES) $(CFLAGS)
 
 INCL=./jrb.h ./jval.h ./dllist.h ./fifo.h
 COMMON=.
@@ -18,8 +20,8 @@ all: $(PROGRAMS)
 simple_taboo_search: simple_taboo_search.c $(INCL) ${BOBJ}
 	$(COMPILE) ${INCLUDES} -o simple_taboo_search simple_taboo_search.c $(BOBJ) $(LIBS)
 
-simple_taboo_search-7: simple_taboo_search-7.c $(INCL) ${BOBJ}
-	$(COMPILE) ${INCLUDES} -o simple_taboo_search-7 simple_taboo_search-7.c $(BOBJ) $(LIBS)
+simple_taboo_search-7: simple_taboo_search-7.cpp $(INCL) ${BOBJ}
+	$(COMPILE_CPP) ${INCLUDES} -o simple_taboo_search-7 simple_taboo_search-7.cpp $(BOBJ) $(LIBS)
 
 test_clique_count: test_clique_count.c graph_utils.o graph_utils.h clique_count.o clique_count.h $(INCL) ${BOBJ}
 	$(COMPILE) ${INCLUDES} -o test_clique_count test_clique_count.c clique_count.o graph_utils.o $(BOBJ) $(LIBS)

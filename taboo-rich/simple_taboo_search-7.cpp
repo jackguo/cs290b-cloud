@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 
+extern "C" {
 #include "fifo.h"	/* for taboo list */
-
+}
 
 #define MAXSIZE (541)
 
