@@ -214,7 +214,7 @@ main(int argc,char *argv[])
 		/*
 		 * find out how we are doing
 		 */
-		count = CliqueCount(g,gsize);
+		count = CliqueCount(g, gsize);
 
 		/*
 		 * if we have a counter example
@@ -336,7 +336,7 @@ main(int argc,char *argv[])
 		 * taboo this graph configuration so that we don't visit
 		 * it again
 		 */
-		count = CliqueCount(g,gsize);
+                //count = CliqueCount(g,gsize);
 		FIFOInsertEdge(taboo_list,best_i,best_j);
 //		FIFOInsertEdgeCount(taboo_list,best_i,best_j,count);
 
