@@ -284,8 +284,13 @@ void tabu_search_full(){
                         }
                         else{
                             sz = best_k.size();
-                            best_k[sz-1] = key;
-                            best_start = sz - 1;
+                            if(sz == 0){
+                                best_k.push_back(key);
+                            }
+                            else{
+                                best_k[sz-1] = key;
+                                best_start = sz - 1;
+                            }
                         }
 
                         best_count = count;
