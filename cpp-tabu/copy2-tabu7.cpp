@@ -146,6 +146,12 @@ void tabu_search_full(){
     std::queue<int> ban_q;
     
     /*
+    best_counts collector
+    */
+    std::vector<int> best_k;
+    int best_start = 0;
+
+    /*
     start with graph of size 8
     */
     gsize = 8;
@@ -168,6 +174,12 @@ void tabu_search_full(){
         */
         count = CliqueCount(g, gsize);
         
+        /*
+        reset collector
+        */
+        best_k.clear();
+        best_start = 0;
+
         /*
         if we get a counter example
         */
@@ -233,8 +245,9 @@ void tabu_search_full(){
         
         best_count = BIGCOUNT;
         int key;
-        bool b;
-        ra2 = rand() % 2;
+        size_t sz;
+        //bool b;
+        //ra2 = rand() % 2;
         for(i=0; i<gsize; i++){
             for(j=i+1; j<gsize; j++){
                 
@@ -255,11 +268,27 @@ void tabu_search_full(){
                     if we have multiple best counts, which one do we use?
                     we use the first one or last one ?
                     */
-                    b = (ra2 == 0 && count < best_count) || (ra2 == 1 && count <= best_count);
+                    //b = (ra2 == 0 && count < best_count) || (ra2 == 1 && count <= best_count);
+                    /*
                     if( b && ban_s.count(key) == 0){
                         best_count = count;
                         best_i = i;
                         best_j = j;
+                    }
+                    */
+
+                    if(count <= best_count && ban_s.count(key) == 0){
+
+                        if(count == best_count){
+                            best_k.push_back(key);
+                        }
+                        else{
+                            sz = best_k.size();
+                            best_k[sz-1] = key;
+                            best_start = sz - 1;
+                        }
+
+                        best_count = count;
                     }
                     
                     /*
@@ -281,13 +310,19 @@ void tabu_search_full(){
         /*
         keep the best flip we saw
         */
+        sz = best_k.size();
+        ra1 = rand() % (sz - best_start);
+        ra1 += best_start;
+        key = best_k[ra1];
+        best_i = getI(key);
+        best_j = getJ(key);
         g[best_i*gsize + best_j] = 1 - g[best_i*gsize + best_j];
         
         /*
         tabu this graph configuration so that we do not 
         visit it again
         */
-        key = getKey(best_i, best_j);
+        //key = getKey(best_i, best_j);
         if(ban_q.size() == TABOOSIZE){
             ban_s.erase(ban_q.front());
             ban_q.pop();
