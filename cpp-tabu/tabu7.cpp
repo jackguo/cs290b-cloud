@@ -10,12 +10,82 @@ Team: Eagle
 #include <string.h>
 
 #include <queue>
-#include <unordered_set>
+#include <set>
+#include <vector>
+#include <thread>
+#include <mutex>
 
 
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
+#define TABOOSIZE_PART (20)
 #define BIGCOUNT (9999999)
+
+
+/*
+function declare
+*/
+void update( int , int* );
+void PrintGraph( int*, int );
+void CopyGraph( int*, int, int*, int );
+int CliqueCount( int*, int );
+void tabu_search_full();
+int CliqueCountPart( int*, int );
+void tabu_search_part();
+
+
+/*
+storing the largest graph we have found
+*/
+int found_g[80000] = {0};
+int found_size = 8;
+std::mutex mtx;
+
+/*
+found a larger one? update it.
+*/
+void putFound(int sz, int *g){
+    
+    mtx.lock();
+
+    if(sz <= found_size){
+        mtx.unlock();
+        return;
+    }
+
+    found_size = sz;
+
+    CopyGraph(g, sz, found_g, found_size);
+
+
+    mtx.unlock();
+}
+
+/*
+find self is lagging? then use the Found
+*/
+int* getFound(int sz, int *g){
+    mtx.lock();
+
+    if(sz >= found_size){
+        mtx.unlock();
+        return g;
+    }
+
+    sz = found_size;
+    int *new_g = (int *)malloc(sz*sz*sizeof(int));
+    if(new_g == NULL) exit(1);
+
+    CopyGraph(found_g, found_size, new_g, sz);
+    free(g);
+
+    mtx.unlock();
+
+    return new_g;
+}
+
+
+
 
 
 /*
@@ -141,9 +211,15 @@ void tabu_search_full(){
     /*
     init tabu list which is made up by 1 set and 1 queue
     */
-    std::unordered_set<int> ban_s;
+    std::set<int> ban_s;
     std::queue<int> ban_q;
     
+    /*
+    best_counts collector
+    */
+    std::vector<int> best_k;
+    int best_start = 0;
+
     /*
     start with graph of size 8
     */
@@ -159,12 +235,19 @@ void tabu_search_full(){
     /*
     search
     */
+    int ra1;
     while(gsize < MAXSIZE){
         /*
         find how we are doing
         */
         count = CliqueCount(g, gsize);
         
+        /*
+        reset collector
+        */
+        best_k.clear();
+        best_start = 0;
+
         /*
         if we get a counter example
         */
@@ -188,8 +271,8 @@ void tabu_search_full(){
             zero out the last column and last row
             */
             for(i=0; i<gsize+1; i++){
-                int ra = rand() % 2;
-                if(ra == 0){
+                ra1 = rand() % 2;
+                if(ra1 == 0){
                     new_g[i*(gsize+1) + gsize] = 0;
                     new_g[gsize*(gsize+1) + i] = 0;
                 }
@@ -229,14 +312,13 @@ void tabu_search_full(){
         */
         
         best_count = BIGCOUNT;
-        int rand_int;
         int key;
-        
+        size_t sz;
         for(i=0; i<gsize; i++){
             for(j=i+1; j<gsize; j++){
                 
-                rand_int = rand() %2;
-                if(rand_int == 0){
+                ra1 = rand() % 2;
+                if(ra1 == 0){
                     /*
                     flip it
                     */
@@ -247,10 +329,28 @@ void tabu_search_full(){
                     is it better and the i,j,count not tabu?
                     */
                     key = getKey(i, j);
-                    if(count < best_count && ban_s.count(key) == 0){
+                    
+                    /*
+                    if we have multiple best counts, which one do we use?
+                    we use the first one or last one ?
+                    */
+                    if(count <= best_count && ban_s.count(key) == 0){
+
+                        if(count == best_count){
+                            best_k.push_back(key);
+                        }
+                        else{
+                            sz = best_k.size();
+                            if(sz == 0){
+                                best_k.push_back(key);
+                            }
+                            else{
+                                best_k[sz-1] = key;
+                                best_start = sz - 1;
+                            }
+                        }
+
                         best_count = count;
-                        best_i = i;
-                        best_j = j;
                     }
                     
                     /*
@@ -272,13 +372,19 @@ void tabu_search_full(){
         /*
         keep the best flip we saw
         */
+        sz = best_k.size();
+        ra1 = rand() % (sz - best_start);
+        ra1 += best_start;
+        key = best_k[ra1];
+        best_i = getI(key);
+        best_j = getJ(key);
         g[best_i*gsize + best_j] = 1 - g[best_i*gsize + best_j];
         
         /*
         tabu this graph configuration so that we do not 
         visit it again
         */
-        key = getKey(best_i, best_j);
+        //key = getKey(best_i, best_j);
         if(ban_q.size() == TABOOSIZE){
             ban_s.erase(ban_q.front());
             ban_q.pop();
@@ -296,7 +402,6 @@ void tabu_search_full(){
     }
         
 }
-
 
 
 
@@ -375,9 +480,16 @@ void tabu_search_part(){
     /*
     init tabu list which is made up by 1 set and 1 queue
     */
-    std::unordered_set<int> ban_s;
+    std::set<int> ban_s;
     std::queue<int> ban_q;
     
+
+    /*
+    best_counts collector
+    */
+    std::vector<int> best_k;
+    int best_start = 0;
+
     /*
     start with graph of size 8
     */
@@ -395,12 +507,19 @@ void tabu_search_part(){
     /*
     search
     */
+    int ra1;
     while(gsize < MAXSIZE){
         /*
         find how we are doing
         */
-        count = CliqueCOunt(g, gsize);
+        count = CliqueCountPart(g, gsize);
         
+        /*
+        reset collecor
+        */
+        best_k.clear();
+        best_start = 0;
+
         /*
         if we get a counter example
         */
@@ -420,13 +539,138 @@ void tabu_search_part(){
             */
             CopyGraph(g, gsize, new_g, gsize+1);
             
-            
+            /*
+            zero out the last column and last row
+            */
+            for(i=0; i<gsize+1; i++){
+                ra1 = rand() % 2;
+                if(ra1 == 0){
+                    new_g[i*(gsize+1) + gsize] = 0;
+                    new_g[gsize*(gsize+1) + i] = 0;
+                }
+                else{
+                    new_g[i*(gsize+1) + gsize] = 1;
+                    new_g[gsize*(gsize+1) + i] = 1;
+                }
+
+            }
+
+            /*
+            throw away the old graph and make new one
+            */
+            free(g);
+            g = new_g;
+            gsize++;
+
+            /*
+            reset the taboo list for the new graph
+            */
+            ban_s.clear();
+            clearQ(ban_q);
+
+            /*
+            keep going
+            */
+            continue;
         
         }
+
+        /*
+        otherwise, random flip
+        */
+        best_count = BIGCOUNT;
+        int key;
+        size_t sz;
+
+        /*
+        unlike tabu_search_full, here we only
+        flip the new edge, which is the last row
+        amd last column
+        */
+        j = gsize - 1;
+        for(i=0; i<gsize-1; i++){
+            ra1 = rand() % 2;
+            if(ra1 == 0){
+
+                /*
+                flip it
+                */
+                g[i*gsize + j] = 1 = g[i*gsize + j];
+                count = CliqueCountPart(g, gsize);
+
+                /*
+                is it better and the i,j,count not tabu?
+                */
+                key = getKey(i, j);
+
+                if(count <= best_count && ban_s.count(key) == 0){
+
+                    if(count == best_count){
+                        best_k.push_back(key);
+                    }
+                    else{
+                        sz = best_k.size();
+                        if(sz == 0){
+                            best_k.push_back(key);
+                        }
+                        else{
+                            best_k[sz-1] = key;
+                            best_start = sz - 1;
+                        }
+                    }
+
+                    best_count = count;
+
+                }
+
+                /*
+                flip it back
+                */
+                g[i*gsize + j] = 1 - g[i*gsize + j];
+
+            }
+        }
+
+
+        if(best_count == BIGCOUNT){
+            printf("no best edge found, terminating\n");
+            exit(1);
+        }
+
+        /*
+        keep the best flip we saw
+        */
+        sz = best_k.size();
+        ra1 = rand() % (sz - best_start);
+        ra1 += best_start;
+        key = best_k[ra1];
+        best_i = getI(key);
+        best_j = getJ(key);
+        g[best_i*gsize + best_j] = 1 - g[best_i*gsize + best_j];
+
+
+        /*
+        tabu this graph configuration so that we do not visit
+        it again
+        */
+        if(ban_q.size() == TABOOSIZE_PART){
+            ban_s.erase(ban_q.front());
+            ban_q.pop();
+        }
+
+        ban_q.push(key);
+        ban_s.insert(key);
+
     
+        printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+        gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
+        
+        /*
+        rinse and repeat
+        */          
     
     }
-        
+
 }
 
 
