@@ -699,7 +699,7 @@ void tabu_search_part(){
         ban_s.insert(key);
 
     
-        printf("P: ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+        printf(".: ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
         gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
         
         /*
