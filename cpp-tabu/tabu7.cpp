@@ -680,8 +680,10 @@ main
 */
 int main(void){
     
-    tabu_search_full();
+    //tabu_search_full();
     
+    tabu_search_part();
+
     return 0;
 }
 
