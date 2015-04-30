@@ -18,7 +18,7 @@ Team: Eagle
 
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
-#define TABOOSIZE_PART (20)
+#define TABOOSIZE_PART (12)
 #define BIGCOUNT (9999999)
 
 
@@ -64,10 +64,10 @@ void putFound(int sz, int *g){
 /*
 find self is lagging? then use the Found
 */
-int* getFound(int sz, int *g){
+int* getFound(int &sz, int *g){
     mtx.lock();
 
-    if(sz >= found_size){
+    if( sz >= found_size){
         mtx.unlock();
         return g;
     }
@@ -237,6 +237,24 @@ void tabu_search_full(){
     */
     int ra1;
     while(gsize < MAXSIZE){
+
+        /*
+        fall behind?
+        */
+        if(gsize != found_size){
+
+            if(gsize < found_size){
+
+                g = getFound(gsize, g);
+
+            }
+            else{
+                putFound(gsize, g);
+            }
+
+        }
+
+
         /*
         find how we are doing
         */
@@ -392,7 +410,7 @@ void tabu_search_full(){
         ban_q.push(key);
         ban_s.insert(key);
         
-        printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+        printf("F: ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
         gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
         
         /*
@@ -509,6 +527,25 @@ void tabu_search_part(){
     */
     int ra1;
     while(gsize < MAXSIZE){
+
+
+        /*
+        fall behind?
+        */
+        if(gsize != found_size){
+
+            if(gsize < found_size){
+
+                g = getFound(gsize, g);
+
+            }
+            else{
+                putFound(gsize, g);
+            }
+
+        }
+
+
         /*
         find how we are doing
         */
@@ -662,7 +699,7 @@ void tabu_search_part(){
         ban_s.insert(key);
 
     
-        printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
+        printf("P: ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
         gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
         
         /*
@@ -681,8 +718,14 @@ main
 int main(void){
     
     //tabu_search_full();
-    
-    tabu_search_part();
+    //tabu_search_part();
+
+    std::thread t1 (tabu_search_full);
+    std::thread t2 (tabu_search_part);
+
+    t1.join();
+    t2.join();
+
 
     return 0;
 }
