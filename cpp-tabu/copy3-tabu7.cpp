@@ -18,7 +18,7 @@ agressive
 
 #define MAXSIZE (541)
 #define TABOOSIZE (500)
-#define TABOOSIZE_PART (10)
+#define TABOOSIZE_PART (30)
 #define BIGCOUNT (9999999)
 
 
