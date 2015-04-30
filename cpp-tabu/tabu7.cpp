@@ -595,7 +595,7 @@ void tabu_search_part(){
                 /*
                 flip it
                 */
-                g[i*gsize + j] = 1 = g[i*gsize + j];
+                g[i*gsize + j] = 1 - g[i*gsize + j];
                 count = CliqueCountPart(g, gsize);
 
                 /*
