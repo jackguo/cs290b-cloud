@@ -1,7 +1,8 @@
-a list of vms (dns or ip, port opened and username to login)
+# a list of vms (dns or ip, port opened and username to login)
+# please use ip to login :)
 
 vm1:
-  dns/ip: ealge-1.cloudapp.net/191.236.122.49
-  port:     5000 - 5001
-  username: ealge
+  dns/ip: eagle-1.cloudapp.net/191.236.122.49
+  port:     5000 - 5004
+  username: eagle
   access-key: azure-eagle.key
