@@ -1,7 +1,6 @@
 /*
-CS 290B
-tabu search: R(7,7)
-Team: Eagle
+2-threaded version
+1 fast, 1 slow
 */
 #include <stdlib.h>
 #include <unistd.h>
