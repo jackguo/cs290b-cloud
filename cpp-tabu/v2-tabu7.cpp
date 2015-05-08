@@ -310,14 +310,6 @@ void tabu_search(){
     
 
     /*
-    flip possibilty
-    6 -> 60%
-    the higher, the faster converge
-    but the lower randomness
-    */
-    int flip_P = 2;
-
-    /*
     hold buffer until get to threshold
     */
     int print_buffer;
@@ -452,8 +444,15 @@ void tabu_search(){
         for(i=0; i<gsize; i++){
             for(j=i+1; j<gsize; j++){
                 
-                ra1 = rand() % 10;
-                if(ra1 < flip_P){
+
+                /*
+                let flip possibility = 1/n
+                n is the size of graph
+                */
+                ra1 = rand() % gsize;
+                
+
+                if( ra1 == 0 ){
                     /*
                     flip it
                     */
