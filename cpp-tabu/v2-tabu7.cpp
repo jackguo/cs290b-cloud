@@ -315,7 +315,7 @@ void tabu_search(){
     the higher, the faster converge
     but the lower randomness
     */
-    int flip_P = 6;
+    int flip_P = 2;
 
     /*
     hold buffer until get to threshold
@@ -545,7 +545,7 @@ void tabu_search(){
             printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n", gsize, count, best_i, best_j, g[best_i*gsize + best_j]);
         }
 
-        
+
         /*
         rinse and repeat
         */   
