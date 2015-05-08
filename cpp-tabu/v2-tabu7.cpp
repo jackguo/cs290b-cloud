@@ -409,12 +409,14 @@ void tabu_search(){
         if(count == 0){
             printf("....Euraka! Counter found\n");
 
+            /*
             if(CliqueCountRR(g, gsize) == 0){
 
                 printf("Really...\n");
 
             }
-
+            */
+            
             PrintGraph(g, gsize);
             
             /*
