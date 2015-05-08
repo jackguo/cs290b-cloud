@@ -77,6 +77,49 @@ void clearQ( std::queue<int> &q){
 
 
 
+int CliqueCountRR(int *g, int gsize){
+    int i,j,k,l,m,n,o,count,sgsize, colr;
+    count = 0;
+    sgsize = 7;
+    
+    for(i=0; i<gsize-sgsize+1; i++){
+        for(j=i+1; j<gsize-sgsize+2; j++){
+            colr = g[i*gsize + j];
+            for(k=j+1; k<gsize-sgsize+3; k++){
+            
+                if(colr == g[i*gsize + k] && colr == g[j*gsize + k]){
+                    
+                    for(l=k+1; l<gsize-sgsize+4; l++){
+                                        
+                        if(colr == g[i*gsize + l] && colr == g[j*gsize + l] && colr == g[k*gsize + l]){
+                            
+                            for(m=l+1; m<gsize-sgsize+5; m++){
+                                if(colr == g[i*gsize+ m] && colr == g[j*gsize+ m] && colr == g[k*gsize+ m] && colr == g[l*gsize+ m]){
+                                    for(n=m+1; n<gsize-sgsize+6;n++){
+                                        if(colr == g[i*gsize + n] && colr == g[j*gsize + n] && colr == g[k*gsize + n] && colr == g[l*gsize + n] && colr == g[m*gsize + n]){
+                                            for(o=n+1; o<gsize-sgsize+7; o++){
+                                                if(colr == g[i*gsize+ o] && colr == g[j*gsize+ o] && colr == g[k*gsize+ o] && colr == g[l*gsize+ o] && colr == g[m*gsize+ o] && colr == g[n*gsize+ o]){
+                                                    count++;
+                                                }
+                                            }                                        
+                                        }
+                                    }
+                                
+                                }
+                            }
+                        }                   
+                    }
+                }            
+            }
+        }    
+    }
+    
+    return count;
+}
+
+
+
+
 /*
 return the number of monochromatic cliques in the graph of size (n+1).
 assuming the graph of size n is already a counter example.
@@ -350,7 +393,7 @@ void tabu_search(){
         /*
         find how we are doing
         */
-        count = CliqueCount(g, gsize);
+        count = (gsize == 8)? 0 : CliqueCount(g, gsize);
         
 
         /*
@@ -365,6 +408,13 @@ void tabu_search(){
         */
         if(count == 0){
             printf("....Euraka! Counter found\n");
+
+            if(CliqueCountRR(g, gsize) == 0){
+
+                printf("Really...\n");
+
+            }
+
             PrintGraph(g, gsize);
             
             /*
