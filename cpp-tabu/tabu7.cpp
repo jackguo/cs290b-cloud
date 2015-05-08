@@ -24,7 +24,6 @@
 /*
 function declare
 */
-void update( int , int* );
 void PrintGraph( int*, int );
 void CopyGraph( int*, int, int*, int );
 int CliqueCount( int*, int );
