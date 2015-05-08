@@ -77,49 +77,6 @@ void clearQ( std::queue<int> &q){
 
 
 
-int CliqueCountRR(int *g, int gsize){
-    int i,j,k,l,m,n,o,count,sgsize, colr;
-    count = 0;
-    sgsize = 7;
-    
-    for(i=0; i<gsize-sgsize+1; i++){
-        for(j=i+1; j<gsize-sgsize+2; j++){
-            colr = g[i*gsize + j];
-            for(k=j+1; k<gsize-sgsize+3; k++){
-            
-                if(colr == g[i*gsize + k] && colr == g[j*gsize + k]){
-                    
-                    for(l=k+1; l<gsize-sgsize+4; l++){
-                                        
-                        if(colr == g[i*gsize + l] && colr == g[j*gsize + l] && colr == g[k*gsize + l]){
-                            
-                            for(m=l+1; m<gsize-sgsize+5; m++){
-                                if(colr == g[i*gsize+ m] && colr == g[j*gsize+ m] && colr == g[k*gsize+ m] && colr == g[l*gsize+ m]){
-                                    for(n=m+1; n<gsize-sgsize+6;n++){
-                                        if(colr == g[i*gsize + n] && colr == g[j*gsize + n] && colr == g[k*gsize + n] && colr == g[l*gsize + n] && colr == g[m*gsize + n]){
-                                            for(o=n+1; o<gsize-sgsize+7; o++){
-                                                if(colr == g[i*gsize+ o] && colr == g[j*gsize+ o] && colr == g[k*gsize+ o] && colr == g[l*gsize+ o] && colr == g[m*gsize+ o] && colr == g[n*gsize+ o]){
-                                                    count++;
-                                                }
-                                            }                                        
-                                        }
-                                    }
-                                
-                                }
-                            }
-                        }                   
-                    }
-                }            
-            }
-        }    
-    }
-    
-    return count;
-}
-
-
-
-
 /*
 return the number of monochromatic cliques in the graph of size (n+1).
 assuming the graph of size n is already a counter example.
@@ -351,6 +308,21 @@ void tabu_search(){
     int diff;
     int best_diff;
     
+
+    /*
+    flip possibilty
+    6 -> 60%
+    the higher, the faster converge
+    but the lower randomness
+    */
+    int flip_P = 6;
+
+    /*
+    hold buffer until get to threshold
+    */
+    int print_buffer;
+    int print_threshold = 20;
+
     /*
     init tabu list which is made up by 1 set and 1 queue
     */
@@ -407,16 +379,12 @@ void tabu_search(){
         if we get a counter example
         */
         if(count == 0){
+
+            print_buffer = 0;
+
             printf("....Euraka! Counter found\n");
 
-            /*
-            if(CliqueCountRR(g, gsize) == 0){
 
-                printf("Really...\n");
-
-            }
-            */
-            
             PrintGraph(g, gsize);
             
             /*
@@ -484,8 +452,8 @@ void tabu_search(){
         for(i=0; i<gsize; i++){
             for(j=i+1; j<gsize; j++){
                 
-                ra1 = rand() % 2;
-                if(ra1 == 0){
+                ra1 = rand() % 10;
+                if(ra1 < flip_P){
                     /*
                     flip it
                     */
@@ -570,8 +538,13 @@ void tabu_search(){
         ban_q.push(key);
         ban_s.insert(key);
         
-        printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n",
-        gsize, count, best_i, best_j, g[best_i*gsize + best_j]);
+
+        print_buffer = (print_buffer == BIGCOUNT)? 0 : print_buffer + 1;
+        if(print_buffer % print_threshold == 0){
+
+            printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n", gsize, count, best_i, best_j, g[best_i*gsize + best_j]);
+        }
+
         
         /*
         rinse and repeat
