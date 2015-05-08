@@ -15,7 +15,6 @@ single thread.
 
 
 #define MAXSIZE (541)
-#define TABOOSIZE (500)
 #define BIGCOUNT (9999999)
 
 
@@ -528,9 +527,9 @@ void tabu_search(){
         /*
         tabu this graph configuration so that we do not 
         visit it again
+        make TABOOSIZE = gsize
         */
-        //key = getKey(best_i, best_j);
-        if(ban_q.size() == TABOOSIZE){
+        if(ban_q.size() == gsize){
             ban_s.erase(ban_q.front());
             ban_q.pop();
         }
