@@ -448,7 +448,7 @@ void tabu_search(){
                 let flip possibility = 1/n
                 n is the size of graph
                 */
-                ra1 = rand() % gsize;
+                ra1 = rand() % (gsize + gsize);
                 
 
                 if( ra1 == 0 ){
