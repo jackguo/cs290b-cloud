@@ -9,7 +9,7 @@ COMPILE_CPP = $(CPP) $(INCLUDES) $(CFLAGS)
 INCL=./jrb.h ./jval.h ./dllist.h ./fifo.h
 COMMON=.
 PRED=.
-BOBJ=$(COMMON)/jval.o $(COMMON)/jrb.o $(COMMON)/dllist.o $(COMMON)/fifo.o
+BOBJ=$(COMMON)/jval.o $(COMMON)/jrb.o $(COMMON)/dllist.o $(COMMON)/fifo.o $(COMMON)/graph_utils.o
 LIBS= -lm 
 
 PROGRAMS = simple_taboo_search simple_taboo_search-7 test_clique_count

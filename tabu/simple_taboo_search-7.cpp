@@ -7,6 +7,7 @@
 
 extern "C" {
 #include "fifo.h"	/* for taboo list */
+#include "graph_utils.h"
 }
 
 #define MAXSIZE (541)
@@ -23,30 +24,6 @@ extern "C" {
  *** uses a taboo list of size #TABOOSIZE# to hold and encoding of and edge
  *** (i,j)+clique_count
  ***/
-
-/*
- * PrintGraph
- *
- * prints in the right format for the read routine
- */
-void PrintGraph(int *g, int gsize)
-{
-	int i;
-	int j;
-
-	fprintf(stdout,"%d\n",gsize);
-
-	for(i=0; i < gsize; i++)
-	{
-		for(j=0; j < gsize; j++)
-		{
-			fprintf(stdout,"%d ",g[i*gsize+j]);
-		}
-		fprintf(stdout,"\n");
-	}
-
-	return;
-}
 
 /*
  * CopyGraph 
@@ -167,8 +144,8 @@ int CliqueCount(int *g,
 int
 main(int argc,char *argv[])
 {
-	if (argc != 2) {
-		fprintf(stderr, "Invalid number of arguments!\nOnly max graph size is needed\n");
+	if (argc != 3) {
+		fprintf(stderr, "Invalid number of arguments!\nMax graph size is needed\n");
 		exit(1);
 	}
 	int *g;
@@ -184,12 +161,13 @@ main(int argc,char *argv[])
 	int max_size = atoi(argv[1]);
         srand(time(0));
 
-	/*
-	 * start with graph of size 8
-	 */
-	gsize = 8;
-	g = (int *)malloc(gsize*gsize*sizeof(int));
-	if(g == NULL) {
+        /* 
+         * read a graph from file 
+         */
+
+        int ret = ReadGraph(argv[2], &g, &gsize);
+        
+	if(ret != 1) {
 		exit(1);
 	}
 
@@ -202,9 +180,9 @@ main(int argc,char *argv[])
 	}
 
 	/*
-	 * start out with all zeros
+	 * start out with a counter example
 	 */
-	memset(g,0,gsize*gsize*sizeof(int));
+        count = 0;
 
 	/*
 	 * while we do not have a publishable result
@@ -214,7 +192,7 @@ main(int argc,char *argv[])
 		/*
 		 * find out how we are doing
 		 */
-		count = CliqueCount(g, gsize);
+          //count = CliqueCount(g, gsize);
 
 		/*
 		 * if we have a counter example
@@ -268,6 +246,7 @@ main(int argc,char *argv[])
 			 * reset the taboo list for the new graph
 			 */
 			taboo_list = FIFOResetEdge(taboo_list);
+                        count = CliqueCount(g, gsize);
 
 			/*
 			 * keep going
@@ -331,7 +310,8 @@ main(int argc,char *argv[])
 		 * keep the best flip we saw
 		 */
 		g[best_i*gsize+best_j] = 1 - g[best_i*gsize+best_j];
-
+                count = best_count;
+                
 		/*
 		 * taboo this graph configuration so that we don't visit
 		 * it again
