@@ -456,7 +456,7 @@ void tabu_search(){
                                     count = CliqueCount(g, gsize, false);
 
                                     ra2 = rand() % 2;
-                                    bool flag = (ra2 == 0)? (count < best_count) : (count <= best_count);
+                                    bool flag = (ra2 == 0)? (count < best_count2) : (count <= best_count2);
                                     
                                     if(flag){
                                         best_count2 = count;
