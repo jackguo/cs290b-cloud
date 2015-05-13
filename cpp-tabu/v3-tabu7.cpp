@@ -195,8 +195,22 @@ void tabu_search(){
     */
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 30;
+    int stuck_threshold = 20;
+    int stuck_threshold2 = 20;
 
+
+    /*
+    multiple flips?
+    */
+    int m;
+    int n;
+    int best_count2;
+    int best_i2;
+    int best_j2;
+    int key2;
+    int best_m;
+    int best_n;
+    int run_level = 1;
 
     /*
     init tabu list which is made up by 1 set and 1 queue
@@ -208,7 +222,7 @@ void tabu_search(){
     /*
     best_counts collector
     */
-    std::vector<int> best_k;
+    std::vector<int> best_K;
     int best_start = 0;
 
 
@@ -234,6 +248,7 @@ void tabu_search(){
     search
     */
     int ra1;
+    int ra2;
     while(gsize < MAXSIZE){
 
 
@@ -246,7 +261,7 @@ void tabu_search(){
         /*
         reset collector
         */
-        best_k.clear();
+        best_K.clear();
         best_start = 0;
 
 
@@ -309,6 +324,7 @@ void tabu_search(){
             reset flip bool and stucks
             */
             flip_new_edge_only = true;
+            run_level = 1;
             stuck_num = 0;
             stuck_cnt = 0;
 
@@ -339,21 +355,23 @@ void tabu_search(){
                 ra1 = rand() % 2;
 
                 if(ra1 == 0){
+                    key = getKey(i, j);
+                    if(ban_s.count(key) != 0) continue;
+
                     g[ i*gsize + j ] = 1 - g[ i*gsize + j ];
                     count = CliqueCount(g, gsize, true);
 
-                    key = getKey(i, j);
-                    if(count <= best_count && ban_s.count(key) == 0){
+                    if(count <= best_count ){
                         if(count == best_count){
-                            best_k.push_back(key);
+                            best_K.push_back(key);
                         }
                         else{
-                            sz = best_k.size();
+                            sz = best_K.size();
                             if(sz == 0){
-                                best_k.push_back(key);
+                                best_K.push_back(key);
                             }
                             else{
-                                best_k[sz - 1] = key;
+                                best_K[sz - 1] = key;
                                 best_start = sz - 1;
                             }
                         }
@@ -370,64 +388,92 @@ void tabu_search(){
 
         else{
 
+            /*
+            flip 1 edge
+            */
             for(i=0; i<gsize; i++){
                 for(j=i+1; j<gsize; j++){
                     
-
-                    /*
-                    let flip possibility = 1/n
-                    n is the size of graph
-                    */
                     ra1 = rand() % gsize;
                     
 
                     if( ra1 == 0 ){
-                        /*
-                        flip it
-                        */
+
+                        key = getKey(i, j);
+                        if(ban_s.count(key) != 0) continue;
+
                         g[i*gsize + j] = 1 - g[i*gsize + j];
                         count = CliqueCount(g, gsize, false);
                         
-
-                        /*
-                        is it better and the i,j not tabu?
-                        */
-                        key = getKey(i, j);
                         
-
-                        /*
-                        if we have multiple best counts, which one do we use?
-                        we use the first one or last one ?
-                        */
-                        if( count <= best_count && ban_s.count(key) == 0 ){
+                        if( count <= best_count){
 
                             if( count == best_count ){
-                                best_k.push_back(key);
+                                best_K.push_back(key);
                             }
 
                             else{
-                                sz = best_k.size();
+                                sz = best_K.size();
                                 if(sz == 0){
-                                    best_k.push_back(key);
+                                    best_K.push_back(key);
                                 }
                                 else{
-                                    best_k[sz-1] = key;
+                                    best_K[sz-1] = key;
                                     best_start = sz - 1;
                                 }
                             }
 
                             best_count = count;
                         }
-                        
-                        /*
-                        flip it back
-                        */
+
                         g[i*gsize + j] = 1 - g[i*gsize + j];      
                     
                     }
               
                 }
             
+            }
+
+            /*
+            flip 2 edges at the same time
+            */
+            if(run_level > 1){
+
+                best_count2 = BIGCOUNT;
+                for(i=0; i<gsize; i++){
+                    for(j=i+1; j<gsize; j++){
+                        for(m=i; m<gsize; m++){
+                            for(n=m+1; n<gsize; n++){
+                                if(i == m && j == n) continue;
+                                ra1 = rand() % (gsize + gsize + gsize);
+                                if(ra1 == 0){
+                                    key = getKey(i, j);
+                                    key2 = getKey(m, n);
+                                    if(ban_s.count(key) != 0 || ban_s.count(key2) != 0) continue;
+
+                                    g[i*gsize + j] = 1 - g[i*gsize + j];
+                                    g[m*gsize + n] = 1 - g[m*gsize + n];
+                                    count = CliqueCount(g, gsize, false);
+
+                                    ra2 = rand() % 2;
+                                    bool flag = (ra2 == 0)? (count < best_count) : (count <= best_count);
+                                    
+                                    if(flag){
+                                        best_count2 = count;
+                                        best_i2 = i;
+                                        best_j2 = j;
+                                        best_m = m;
+                                        best_n = n;
+                                    }
+
+
+                                    g[i*gsize + j] = 1 - g[i*gsize + j];
+                                    g[m*gsize + n] = 1 - g[m*gsize + n];
+                                }
+                            }
+                        }
+                    }
+                }
             }
         
         }
@@ -440,34 +486,55 @@ void tabu_search(){
         }
         
 
-
-        /*
-        keep the best flip we saw
-        */
-        sz = best_k.size();
-        ra1 = rand() % (sz - best_start);
-        ra1 += best_start;
-        key = best_k[ra1];
-        best_i = getI(key);
-        best_j = getJ(key);
-        g[ best_i*gsize + best_j ] = 1 - g[ best_i*gsize + best_j ];
-        
-
-
-        /*
-        tabu this graph configuration so that we do not 
-        visit it again
-        make TABOOSIZE = gsize
-        */
         tabu_size = (flip_new_edge_only)? gsize/6 : gsize;
-        if(ban_q.size() == tabu_size){
-            ban_s.erase(ban_q.front());
-            ban_q.pop();
-        }
-        ban_q.push(key);
-        ban_s.insert(key);
-        
 
+        if(run_level > 1 && best_count2 > best_count){
+            /*
+            flip 2 edges
+            */
+            g[ best_i2*gsize + best_j2 ] = 1 - g[ best_i2*gsize + best_j2 ];
+            g[ best_m*gsize + best_n ] = 1 - g[ best_m*gsize + best_n ];
+
+            sz = ban_q.size();
+            if(sz == tabu_size){
+                ban_s.erase(ban_q.front());
+                ban_q.pop();
+                ban_s.erase(ban_q.front());
+                ban_q.pop();                
+            }
+            else if(sz == tabu_size - 1){
+                ban_s.erase(ban_q.front());
+                ban_q.pop();
+            }
+
+            ban_q.push(getKey(best_i2, best_j2));
+            ban_s.insert(getKey(best_i2, best_j2));
+            ban_q.push(getKey(best_m, best_n));
+            ban_s.insert(getKey(best_m, best_n)); 
+
+        }
+        else{
+            /*
+            flip 1 edge
+            */
+            sz = best_K.size();
+            ra1 = rand() % (sz - best_start);
+            ra1 += best_start;
+            key = best_K[ra1];
+            best_i = getI(key);
+            best_j = getJ(key);
+            g[ best_i*gsize + best_j ] = 1 - g[ best_i*gsize + best_j ];
+            
+
+
+            if(ban_q.size() == tabu_size){
+                ban_s.erase(ban_q.front());
+                ban_q.pop();
+            }
+            ban_q.push(key);
+            ban_s.insert(key);
+        
+        }
   
 
         if(flip_new_edge_only){
@@ -477,7 +544,7 @@ void tabu_search(){
             if( i < 3 ){
                 stuck_cnt++;
                 if( stuck_cnt == stuck_threshold ){
-                    printf("stuckked..\n.\n.\n.\n");
+                    printf("stuckked..\n.\n.\n. go to lvl . 1\n");
                     flip_new_edge_only = false;
                     stuck_cnt = 0;
                     stuck_num = 0;
@@ -489,10 +556,37 @@ void tabu_search(){
             }
 
         }
+        else{
+            if(run_level == 1){
+
+                i = stuck_num - best_count;
+                if( i < 0 ) i = -i;
+                if(i < 3){
+                    stuck_cnt++;
+                    if( stuck_cnt == stuck_threshold2 ){
+                        printf("stuckkked..\n.\n.\n go to lvl . 2\n");
+                        run_level = 2;
+                        stuck_cnt = 0;
+                        stuck_num = 0;
+                    }
+                }
+                else{
+                    stuck_num = best_count;
+                    stuck_cnt = 0;
+                }
+
+            }
+        }
         
 
-        printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n", gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
- 
+        if(run_level > 1 && best_count2 > best_count){
+
+            printf("ce size: %d, best_count: %d, best edge 1: (%d, %d), best edge 2: (%d, %d), new color 1: %d, new color 2: %d\n", gsize, best_count2, best_i2, best_j2, best_m, best_n, g[best_i2*gsize + best_j2], g[best_m*gsize + best_n]);            
+
+        }        
+        else{
+            printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n", gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
+        }
         /*
         rinse and repeat
         */   
