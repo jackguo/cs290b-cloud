@@ -94,6 +94,7 @@ int CliqueCount( int *g, int gsize, bool flip_new_edge_only ){
     int sgsize = 7;
     int colr;
 
+
     int hi;
     int hj;
     int hk;
@@ -185,6 +186,7 @@ void tabu_search(){
     int best_j;
 
 
+    int tabu_size;
     bool flip_new_edge_only = true;
 
 
@@ -457,7 +459,8 @@ void tabu_search(){
         visit it again
         make TABOOSIZE = gsize
         */
-        if(ban_q.size() == gsize){
+        tabu_size = (flip_new_edge_only)? 15 : gsize;
+        if(ban_q.size() == tabu_size){
             ban_s.erase(ban_q.front());
             ban_q.pop();
         }
