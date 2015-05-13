@@ -1,5 +1,5 @@
-CC = gcc
-CPP = g++
+CC = condor_compile gcc
+CPP = condor_compile g++
 TOP = .
 INCLUDES = -I$(TOP)
 CFLAGS = -g 

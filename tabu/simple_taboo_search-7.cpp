@@ -272,7 +272,7 @@ main(int argc,char *argv[])
 			for(j=i+1; j < gsize; j++)
 			{
                           rand_int = rand() % 2;
-                          if (rand_int == 0) {
+                          if (rand_int == 0 && !FIFOFindEdge(taboo_list, i, j)) {
                             
 				/*
 				 * flip it
@@ -283,8 +283,8 @@ main(int argc,char *argv[])
 				/*
 				 * is it better and the i,j,count not taboo?
 				 */
-				if((count < best_count) && 
-					!FIFOFindEdge(taboo_list,i,j))
+				if((count < best_count))
+//					!FIFOFindEdge(taboo_list,i,j))
 //					!FIFOFindEdgeCount(taboo_list,i,j,count))
 				{
 					best_count = count;
