@@ -345,6 +345,7 @@ void tabu_search(){
         */
         
         best_count = BIGCOUNT;
+        best_count2 = BIGCOUNT;
         int key;
         size_t sz;
 
@@ -439,7 +440,6 @@ void tabu_search(){
             */
             if(run_level > 1){
 
-                best_count2 = BIGCOUNT;
                 for(i=0; i<gsize; i++){
                     for(j=i+1; j<gsize; j++){
                         for(m=i; m<gsize; m++){
@@ -579,7 +579,7 @@ void tabu_search(){
         }
         
 
-        if(run_level > 1 && best_count2 > best_count){
+        if(best_count2 != BIGCOUNT && run_level > 1 && best_count2 > best_count){
 
             printf("ce size: %d, best_count: %d, best edge 1: (%d, %d), best edge 2: (%d, %d), new color 1: %d, new color 2: %d\n", gsize, best_count2, best_i2, best_j2, best_m, best_n, g[best_i2*gsize + best_j2], g[best_m*gsize + best_n]);            
 
