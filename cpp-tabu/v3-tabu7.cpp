@@ -378,7 +378,7 @@ void tabu_search(){
                     let flip possibility = 1/n
                     n is the size of graph
                     */
-                    ra1 = rand() % (gsize + gsize);
+                    ra1 = rand() % gsize;
                     
 
                     if( ra1 == 0 ){
@@ -459,7 +459,7 @@ void tabu_search(){
         visit it again
         make TABOOSIZE = gsize
         */
-        tabu_size = (flip_new_edge_only)? 15 : gsize;
+        tabu_size = (flip_new_edge_only)? gsize/6 : gsize;
         if(ban_q.size() == tabu_size){
             ban_s.erase(ban_q.front());
             ban_q.pop();
@@ -469,25 +469,28 @@ void tabu_search(){
         
 
   
-        i = stuck_num - best_count;
-        if( i < 0) i = -i;
 
-        if( i < 2 ){
-            stuck_cnt++;
-            if( stuck_cnt == stuck_threshold ){
-                printf("stuckked..\n.\n.\n.\n");
-                flip_new_edge_only = false;
-                stuck_cnt = 0;
-                stuck_num = 0;
+        if(flip_new_edge_only){
+            i = stuck_num - best_count;
+            if( i < 0) i = -i;
+
+            if( i < 3 ){
+                stuck_cnt++;
+                if( stuck_cnt == stuck_threshold ){
+                    printf("stuckked..\n.\n.\n.\n");
+                    flip_new_edge_only = false;
+                    stuck_cnt = 0;
+                    stuck_num = 0;
+                }
             }
-        }
-        else{
-            stuck_num = best_count;
-            stuck_cnt = 0;
-        }
+            else{
+                stuck_num = best_count;
+                stuck_cnt = 0;
+            }
 
-
+        }
         
+
         printf("ce size: %d, best_count: %d, best edge: (%d, %d), new color: %d\n", gsize, best_count, best_i, best_j, g[best_i*gsize + best_j]);
  
         /*
