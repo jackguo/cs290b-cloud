@@ -90,7 +90,7 @@ int CliqueCount( int *g, int gsize, bool flip_new_edge_only ){
     int m;
     int n;
     int o = gsize - 1;
-    int count;
+    int count = 0;
     int sgsize = 7;
     int colr;
 
