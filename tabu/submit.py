@@ -3,6 +3,7 @@
 from subprocess import Popen
 from subprocess import PIPE
 import os
+import time
 
 make_proc = Popen(["make", "simple_taboo_search-7"])
 make_proc.communicate()
@@ -39,3 +40,4 @@ for i in range(1, num_of_jobs + 1):
   p2 = Popen("condor_submit", stdin = p1.stdout)
   p1.stdout.close()
   p2.communicate()
+  time.sleep(60)
