@@ -455,10 +455,12 @@ void tabu_search(){
                                     g[m*gsize + n] = 1 - g[m*gsize + n];
                                     count = CliqueCount(g, gsize, false);
 
+                                    /*
                                     ra2 = rand() % 2;
                                     bool flag = (ra2 == 0)? (count < best_count2) : (count <= best_count2);
-                                    
-                                    if(flag){
+                                    */
+
+                                    if( count < best_count2 ){
                                         best_count2 = count;
                                         best_i2 = i;
                                         best_j2 = j;
@@ -488,7 +490,7 @@ void tabu_search(){
 
         tabu_size = (flip_new_edge_only)? gsize/6 : gsize;
 
-        if(run_level > 1 && best_count2 > best_count){
+        if(run_level > 1 && best_count2 < best_count){
             /*
             flip 2 edges
             */
