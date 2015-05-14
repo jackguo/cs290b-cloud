@@ -14,7 +14,7 @@ public class Genetics
 		//crossover
 		Chromosome baby = crossover(mom,pop);
 		//if it is better add it
-		if(baby.getFitness(7)<p.getWorst().getFitness(7))
+		if(baby.getFitness(5)<p.getWorst().getFitness(5))
 		    {
 			p.addChromosome(p.getWorstPosition(),baby);
 		    }

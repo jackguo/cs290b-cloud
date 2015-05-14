@@ -226,7 +226,7 @@ public class AdjMatrixGraph {
 	    //print our coloring
 	    //c.printColoring();
 	    //get fitness (number of same colored cliques of size x (x is the parameter)
-	    int fit = chr.getFitness(7);
+	    int fit = chr.getFitness(5);
 	    //System.out.println("Number of same colored triangles: "+fit+"\n");
 	    
 	    //make a new population
@@ -234,7 +234,7 @@ public class AdjMatrixGraph {
 	}
 	//begin the mating process!!!
 	int gen = 0;
-	while(pop.getWorst().getFitness(7)>0)
+	while(pop.getWorst().getFitness(5)>0)
 	//while(gen<10)
 	    {
 		System.out.println("Generation "+gen);
@@ -262,7 +262,7 @@ public class AdjMatrixGraph {
 	    writer = new PrintWriter("datazeroes.txt", "UTF-8");
 	    for(Chromosome chrom:pop.getPop())
 		{
-		//if(chrom.getFitness(7)==0)
+		//if(chrom.getFitness(5)==0)
 		//    {
 			//chrom.getColorMatrix().printColoring();
 			//System.out.println();
