@@ -9,6 +9,7 @@ stable but slow
 #include <errno.h>
 #include <string.h>
 
+#include <ctime>
 #include <queue>
 #include <set>
 #include <vector>
@@ -363,6 +364,8 @@ main
 */
 int main(void){
     
+    srand(time(0));
+
     tabu_search_full();
     
     return 0;

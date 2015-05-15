@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <string.h>
 
+#include <ctime>
 #include <queue>
 #include <set>
 #include <vector>
@@ -717,6 +718,9 @@ int main(void){
     
     //tabu_search_full();
     //tabu_search_part();
+
+    srand(time(0));
+
 
     std::thread t1 (tabu_search_full);
     std::thread t2 (tabu_search_part);
