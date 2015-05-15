@@ -38,11 +38,11 @@ class Ramsey
 
 
     //Get the inputs
-    ptsInMap = getInput("How many nodes would you like in the graph?\nThis is essentially a hypothesis for what you expect this Ramsey number to be.",
+    ptsInMap = getInput("How many nodes would you like in the graph?    ",
                         -1);
-    submapSize1 = getInput("We are calculating R(r,b). What would you like the value of r to be?\n(This is the size of the first subgraph size for which we will search.)",
+    submapSize1 = getInput("We are calculating R(r,b). What would you like the value of r to be?\n",
                            ptsInMap);
-    submapSize2 = getInput("We are calculating R(r,b). What would you like the value of b to be?\n(This is the size of the second subgraph size for which we will search.)",
+    submapSize2 = getInput("We are calculating R(r,b). What would you like the value of b to be?\n",
                            ptsInMap);
 
 
@@ -151,10 +151,13 @@ class Ramsey
   {
     int input;
     input = 0;
-
+    Scanner user_input = new Scanner( System.in );
     String temp;
-    boolean errorMessageDisplayed;
-
+    //boolean errorMessageDisplayed;
+    System.out.print(requestMessage);
+	temp= user_input.next( );
+	input = Integer.parseInt(temp);
+	/*
     // have a while loop so we keep asking for value until we get a valid response
     while (input <= 0)
     {
@@ -189,7 +192,7 @@ class Ramsey
       }
 
     }
-
+*/
     return input;
   }
 
