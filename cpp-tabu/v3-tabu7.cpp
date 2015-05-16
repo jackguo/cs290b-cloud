@@ -59,10 +59,12 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result, bool flip_new_e
         if(flip_new_edge_only){
             e[0] = getRandNewEdge(gsize);
             e[1] = getRandNewEdge(gsize);
+            while(e[1] == e[0]) e[1] = getRandNewEdge(gsize);
         }
         else{
             e[0] = getRandEdge(gsize);
             e[1] = getRandEdge(gsize);
+            while(e[1] == e[0]) e[1] = getRandEdge(gsize);
         }
         s = num2str(e[0]) + "-" + num2str(e[1]);
 
