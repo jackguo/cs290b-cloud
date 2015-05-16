@@ -187,6 +187,13 @@ int getRandEdge( int gsize ){
     return getKey(i,j);
 }
 
+int getRandNewEdge( int gsize ){
+    int j = gsize - 1;
+    int i = rand() % (gsize - 1);
+
+    return getKey(i,j);
+}
+
 
 
 

@@ -42,7 +42,7 @@ int getRandEdge( int gsize );
 /*
 flip multiple edges at the same time
 */
-void flip_2_edge( int *g, int gsize, int &best_cnt, int *result ){
+void flip_2_edge( int *g, int gsize, int &best_cnt, int *result, bool flip_new_edge_only ){
     
     int i[2]; //1 end of edge
     int j[2]; //1 end of edge
@@ -56,10 +56,16 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result ){
 
     int goal = gsize / 2;
     while( k < goal ){
-
-        e[0] = getRandEdge(gsize);
-        e[1] = getRandEdge(gsize);
+        if(flip_new_edge_only){
+            e[0] = getRandNewEdge(gsize);
+            e[1] = getRandNewEdge(gsize);
+        }
+        else{
+            e[0] = getRandEdge(gsize);
+            e[1] = getRandEdge(gsize);
+        }
         s = num2str(e[0]) + "-" + num2str(e[1]);
+
         if( checked.count(s) == 0 ){
             /*
             flip 2 edge
@@ -72,7 +78,7 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result ){
             g[ i[0]*gsize + j[0] ] = 1 - g[ i[0]*gsize + j[0] ];
             g[ i[1]*gsize + j[1] ] = 1 - g[ i[1]*gsize + j[1] ];
 
-            cnt = CliqueCount( g, gsize, false );
+            cnt = CliqueCount( g, gsize, flip_new_edge_only );
             if(cnt < best_cnt){
                 best_cnt = cnt;
                 result[0] = i[0];
@@ -268,7 +274,9 @@ void tabu_search(){
                     flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, true);
                 }
             }
-        
+
+
+            flip_2_edge(g, gsize, best_count_2, node, true);
         }
 
         else{
@@ -289,7 +297,7 @@ void tabu_search(){
             /*
             flip 2 edge
             */
-            flip_2_edge(g, gsize, best_count_2, node);
+            flip_2_edge(g, gsize, best_count_2, node, false);
 
         }
 
