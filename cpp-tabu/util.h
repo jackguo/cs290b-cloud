@@ -38,7 +38,7 @@ void CopyGraph(int *old_g, int o_gsize, int *new_g, int n_gsize){
 /*
 Read Graph
 */
-int ReadGraph( char *fname, int **g, int *gsize ){
+int ReadGraph( char const *fname, int **g, int *gsize ){
     int i;
     int j;
     FILE *fd;
