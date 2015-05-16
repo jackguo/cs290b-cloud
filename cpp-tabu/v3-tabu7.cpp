@@ -54,7 +54,7 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result, bool flip_new_e
 
     int k = 0;
 
-    int goal = gsize / 2;
+    int goal = (flip_new_edge_only)? gsize/4 : gsize/2;
     while( k < goal ){
         if(flip_new_edge_only){
             e[0] = getRandNewEdge(gsize);
