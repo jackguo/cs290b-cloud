@@ -173,7 +173,7 @@ void tabu_search(){
     /*
     start with a graph of size 8
     */
-    if( !ReadGraph("8.ce", &g, &gsize) ){
+    if( !ReadGraph("99.ce", &g, &gsize) ){
         fprintf(stderr, "cannot read\n" );
         fflush(stderr);
         exit(1);
