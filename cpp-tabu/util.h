@@ -154,20 +154,38 @@ helper functions
 assuming i, j <= 540
 */
 int getKey(int i, int j){
-    return i*10000 + j;
+    return i*1000 + j;
 }
 int getI(int k){
-    return k / 10000;
+    return k / 1000;
 }
 int getJ(int k){
-    return k % 10000;
+    return k % 1000;
 }
 void clearQ( std::queue<int> &q){
     std::queue<int> empty;
     std::swap( q, empty );
 }
 
+/*
+convert a number to a string
+*/
+std::string num2str( int num ){
+    std::stringstream ss;
+    ss << num;
+    return ss.str();
+}
 
+/*
+get a random edge when given 
+a graph's size.
+*/
+int getRandEdge( int gsize ){
+    int i = rand() % (gsize - 1);
+    int j = (i == gsize - 2)? gsize - 1 : i + 1 + rand() % (gsize - i - 1);
+
+    return getKey(i,j);
+}
 
 
 
