@@ -194,7 +194,7 @@ void tabu_search(){
     int tabu_size;
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 15;
+    int stuck_threshold = 24;
 
 
     /*
@@ -288,7 +288,7 @@ void tabu_search(){
             */
             for(i=0; i<gsize; i++){
                 for(j=i+1; j<gsize; j++){
-                    ra1 = rand() % (gsize + gsize);
+                    ra1 = rand() % gsize;
                     if(ra1 == 0){
                         flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, false);
                     }
