@@ -166,11 +166,24 @@ void tabu_search(){
     /*
     start with a graph of size 8
     */
+    /*
     if( !ReadGraph("8.ce", &g, &gsize) ){
         fprintf(stderr, "cannot read\n" );
         fflush(stderr);
         exit(1);
     }
+    */
+    gsize = 8;
+    g = (int *)malloc(gsize*gsize*sizeof(int));
+    if(g == NULL) exit(1);
+    
+    /*
+    start out with a counter example
+    */
+    memset(g, 0, gsize*gsize*sizeof(int));
+    g[0*gsize + 2] = 1;
+    g[1*gsize + 4] = 1;
+    
 
 
     bool flip_new_edge_only = true;
