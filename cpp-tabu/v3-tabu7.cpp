@@ -105,7 +105,7 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result ){
 /*
 flip 1 edge
 */
-void flip_1_edge(int *g, int gsize, int i, int j, std::set<int> &ban_s, std::vector<int> &best_K, int &best_start, int &best_count){
+void flip_1_edge(int *g, int gsize, int i, int j, std::set<int> &ban_s, std::vector<int> &best_K, int &best_start, int &best_count, bool flip_new_edge_only){
     int key = getKey(i, j);
     int count;
     size_t sz;
@@ -114,21 +114,28 @@ void flip_1_edge(int *g, int gsize, int i, int j, std::set<int> &ban_s, std::vec
         flip
         */
         g[ i*gsize + j ] = 1 - g[ i*gsize + j ];
-        count = CliqueCount(g, gsize, true);
+        count = CliqueCount(g, gsize, flip_new_edge_only );
+
         if(count <= best_count){
-            best_K.push_back(key);
-        }
-        else{
-            sz = best_K.size();
-            if(sz == 0){
+
+            if(count == best_count){
                 best_K.push_back(key);
             }
-            else{
-                best_K[sz - 1] = key;
-                best_start = sz - 1;
-            }
-        }
 
+            else{
+                sz = best_K.size();
+                if(sz == 0){
+                    best_K.push_back(key);
+                }
+                else{
+                    best_K[sz - 1] = key;
+                    best_start = sz - 1;
+                }
+
+                best_count = count;
+            }
+
+        }
         /*
         unflip
         */ 
@@ -166,24 +173,13 @@ void tabu_search(){
     /*
     start with a graph of size 8
     */
-    /*
     if( !ReadGraph("8.ce", &g, &gsize) ){
         fprintf(stderr, "cannot read\n" );
         fflush(stderr);
         exit(1);
     }
-    */
-    gsize = 8;
-    g = (int *)malloc(gsize*gsize*sizeof(int));
-    if(g == NULL) exit(1);
-    
-    /*
-    start out with a counter example
-    */
-    memset(g, 0, gsize*gsize*sizeof(int));
-    g[0*gsize + 2] = 1;
-    g[1*gsize + 4] = 1;
-    
+
+
 
 
     bool flip_new_edge_only = true;
@@ -269,7 +265,7 @@ void tabu_search(){
                 ra1 = rand() % 2;
                 if(ra1 == 0){
 
-                    flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count);
+                    flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, true);
                 }
             }
         
@@ -284,7 +280,7 @@ void tabu_search(){
                 for(j=i+1; j<gsize; j++){
                     ra1 = rand() % (gsize + gsize);
                     if(ra1 == 0){
-                        flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count);
+                        flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, false);
                     }
                 }
 
