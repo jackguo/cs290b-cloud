@@ -194,7 +194,7 @@ void tabu_search(){
     int tabu_size;
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 24;
+    int stuck_threshold = 20;
 
 
     /*
@@ -314,7 +314,7 @@ void tabu_search(){
             /*
             flip 1 edge
             */
-            tabu_size = (flip_new_edge_only)? gsize/6 : gsize;
+            tabu_size = (flip_new_edge_only)? gsize/5 : gsize;
 
             sz = best_K.size();
             ra1 = (best_start == sz - 1)? best_start : best_start + rand() % (sz - best_start);
