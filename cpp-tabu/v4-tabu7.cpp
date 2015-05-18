@@ -42,80 +42,55 @@ void put_to_tabu_list(std::queue<int> &ban_q, std::set<int> &ban_s, int tabu_siz
 
 
 
-
 /*
-flip multiple edges at the same time
+flip multiple edges
+at the same time
 */
-void flip_2_edge( int *g, int gsize, std::set<int> &ban_s, int &best_cnt, int *result, bool flip_new_edge_only ){
-    
-    int i[2]; //1 end of edge
-    int j[2]; //1 end of edge
-    int e[2]; //edge
-    std::set<std::string> checked;
-    std::string s;
+
+void try_flip_2_edge(int *g, int gsize, int &best_count_2, std::vector<int> &best_K, int best_start, int *nd, bool flip_new){
+    int i;
+    int j;
+    int k;
+    int l;
     int cnt;
-    best_cnt = BIGCOUNT;
+    size_t m;
+    size_t n;
+    size_t sz = best_K.size();
 
-    int k = 0;
+    best_count_2 = BIGCOUNT;
 
-    int goal = (flip_new_edge_only)? gsize/3 : gsize;
-    while( k < goal ){
-        if(flip_new_edge_only){
-            e[0] = getRandNewEdge(gsize);
-            while(ban_s.count(e[0]) != 0 ) e[0] = getRandNewEdge(gsize);
-            e[1] = getRandNewEdge(gsize);
-            while(e[1] == e[0] || ban_s.count(e[1]) != 0) e[1] = getRandNewEdge(gsize);
-
-        }
-        else{
-            e[0] = getRandEdge(gsize);
-            while(ban_s.count(e[0]) != 0 ) e[0] = getRandEdge(gsize);
-            e[1] = getRandEdge(gsize);
-            while(e[1] == e[0] || ban_s.count(e[1]) != 0) e[1] = getRandEdge(gsize);
-        }
-
-        sort2(e[0], e[1]);
-        s = num2str(e[0]) + "-" + num2str(e[1]);
-
-        if( checked.count(s) == 0 ){
+    for(m=best_start; m<sz; m++){
+        for(n=m+1; n<sz; n++){
             /*
-            flip 2 edge
+            flip
             */
-            i[0] = getI(e[0]);
-            j[0] = getJ(e[0]);
-            i[1] = getI(e[1]);
-            j[1] = getJ(e[1]);
+            i = getI(best_K[m]);
+            j = getJ(best_K[m]);
+            k = getI(best_K[n]);
+            l = getJ(best_K[n]);
+            g[ i*gsize + j ] = 1 - g[ i*gsize + j ];
+            g[ k*gsize + l ] = 1 - g[ k*gsize + l ];
+            cnt = CliqueCount(g, gsize, flip_new);
 
-            g[ i[0]*gsize + j[0] ] = 1 - g[ i[0]*gsize + j[0] ];
-            g[ i[1]*gsize + j[1] ] = 1 - g[ i[1]*gsize + j[1] ];
-
-            cnt = CliqueCount( g, gsize, flip_new_edge_only );
-            if(cnt < best_cnt){
-                best_cnt = cnt;
-                result[0] = i[0];
-                result[1] = j[0];
-                result[2] = i[1];
-                result[3] = j[1];
+            if( cnt < best_count_2 ){
+                best_count_2 = cnt;
+                nd[0] = i;
+                nd[1] = j;
+                nd[2] = k;
+                nd[3] = l;
             }
 
 
             /*
             unflip
             */
-            g[ i[0]*gsize + j[0] ] = 1 - g[ i[0]*gsize + j[0] ];
-            g[ i[1]*gsize + j[1] ] = 1 - g[ i[1]*gsize + j[1] ];
+            g[ i*gsize + j ] = 1 - g[ i*gsize + j ];
+            g[ k*gsize + l ] = 1 - g[ k*gsize + l ];            
 
-            checked.insert(s);
-            k++;
         }
-
     }
 
-
-    checked.clear();
 }
-
-
 
 
 
@@ -214,7 +189,7 @@ void tabu_search(){
 
 
     /*
-    best_counts collector
+    best_count's collector
     */
     std::vector<int> best_K;
     int best_start = 0;
@@ -279,15 +254,12 @@ void tabu_search(){
         if( flip_new_edge_only ){
             j = gsize - 1;
             for(i=0; i<gsize-1; i++){
-                //ra1 = rand() % 2;
-                //if(ra1 == 0){
 
-                    flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, true);
-                //}
+                flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, true);
+              
             }
 
 
-            flip_2_edge(g, gsize, ban_s, best_count_2, node, true);
         }
 
         else{
@@ -305,11 +277,6 @@ void tabu_search(){
 
             }
 
-            /*
-            flip 2 edge
-            */
-            flip_2_edge(g, gsize, ban_s, best_count_2, node, false);
-
         }
 
 
@@ -318,6 +285,13 @@ void tabu_search(){
             exit(1);
         }
 
+        
+        sz = best_K.size();
+        if(best_start < sz - 1){
+            try_flip_2_edge(g, gsize, best_count_2, best_K, best_start, node, flip_new_edge_only);
+        }
+
+
 
         tabu_size = (flip_new_edge_only)? gsize/4 : gsize + gsize;
         if(best_count <= best_count_2){
@@ -325,7 +299,6 @@ void tabu_search(){
             flip 1 edge
             */
 
-            sz = best_K.size();
             ra1 = (best_start == sz - 1)? best_start : best_start + rand() % (sz - best_start);
             key = best_K[ra1];
             best_i = getI(key);
