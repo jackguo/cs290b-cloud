@@ -34,6 +34,9 @@ int CliqueCount( int *g, int gsize, bool flip_new_edge_only );
 int ReadGraph( char *fname, int **g, int *gsize );
 std::string num2str( int num );
 int getRandEdge( int gsize );
+int sort2( int &n1, int &n2 );
+int sort3( int &n1, int &n2, int &n3 );
+void put_to_tabu_list(std::queue<int> &ban_q, std::set<int> &ban_s, int tabu_size, int key);
 
 #include "util.h"
 
@@ -43,7 +46,7 @@ int getRandEdge( int gsize );
 /*
 flip multiple edges at the same time
 */
-void flip_2_edge( int *g, int gsize, int &best_cnt, int *result, bool flip_new_edge_only ){
+void flip_2_edge( int *g, int gsize, std::set<int> &ban_s, int &best_cnt, int *result, bool flip_new_edge_only ){
     
     int i[2]; //1 end of edge
     int j[2]; //1 end of edge
@@ -59,14 +62,19 @@ void flip_2_edge( int *g, int gsize, int &best_cnt, int *result, bool flip_new_e
     while( k < goal ){
         if(flip_new_edge_only){
             e[0] = getRandNewEdge(gsize);
+            while(ban_s.count(e[0]) != 0 ) e[0] = getRandNewEdge(gsize);
             e[1] = getRandNewEdge(gsize);
-            while(e[1] == e[0]) e[1] = getRandNewEdge(gsize);
+            while(e[1] == e[0] || ban_s.count(e[1]) != 0) e[1] = getRandNewEdge(gsize);
+
         }
         else{
             e[0] = getRandEdge(gsize);
+            while(ban_s.count(e[0]) != 0 ) e[0] = getRandEdge(gsize);
             e[1] = getRandEdge(gsize);
-            while(e[1] == e[0]) e[1] = getRandEdge(gsize);
+            while(e[1] == e[0] || ban_s.count(e[1]) != 0) e[1] = getRandEdge(gsize);
         }
+
+        sort2(e[0], e[1]);
         s = num2str(e[0]) + "-" + num2str(e[1]);
 
         if( checked.count(s) == 0 ){
@@ -195,7 +203,7 @@ void tabu_search(){
     int tabu_size;
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 20;
+    int stuck_threshold = 16;
 
 
     /*
@@ -279,7 +287,7 @@ void tabu_search(){
             }
 
 
-            flip_2_edge(g, gsize, best_count_2, node, true);
+            flip_2_edge(g, gsize, ban_s, best_count_2, node, true);
         }
 
         else{
@@ -300,7 +308,7 @@ void tabu_search(){
             /*
             flip 2 edge
             */
-            flip_2_edge(g, gsize, best_count_2, node, false);
+            flip_2_edge(g, gsize, ban_s, best_count_2, node, false);
 
         }
 
@@ -311,11 +319,11 @@ void tabu_search(){
         }
 
 
+        tabu_size = (flip_new_edge_only)? gsize/4 : gsize + gsize;
         if(best_count <= best_count_2){
             /*
             flip 1 edge
             */
-            tabu_size = (flip_new_edge_only)? gsize/5 : gsize;
 
             sz = best_K.size();
             ra1 = (best_start == sz - 1)? best_start : best_start + rand() % (sz - best_start);
@@ -324,13 +332,8 @@ void tabu_search(){
             best_j = getJ(key);
             g[ best_i*gsize + best_j ] = 1 - g[ best_i*gsize + best_j ];
 
-            if(ban_q.size() == tabu_size){
-                ban_s.erase(ban_q.front());
-                ban_q.pop();
-            }
 
-            ban_q.push(key);
-            ban_s.insert(key);
+            put_to_tabu_list(ban_q, ban_s, tabu_size, key);
 
             /*
             stuck?
@@ -365,6 +368,9 @@ void tabu_search(){
 
             g[ node[0]*gsize + node[1] ] = 1 - g[ node[0]*gsize + node[1] ];
             g[ node[2]*gsize + node[3] ] = 1 - g[ node[2]*gsize + node[3] ];
+
+            put_to_tabu_list(ban_q, ban_s, tabu_size, getKey(node[0], node[1]));
+            put_to_tabu_list(ban_q, ban_s, tabu_size, getKey(node[0], node[1]));
 
             printf("ce size: %d, best_count: %d, best edge: (%d, %d), (%d, %d)\n", gsize, best_count_2, node[0], node[1], node[2], node[3]);
 

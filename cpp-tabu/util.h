@@ -195,6 +195,36 @@ int getRandNewEdge( int gsize ){
 }
 
 
+/*
+sort helper
+*/
+int sort2( int &n1, int &n2 ){
+    int t1 = (n1 < n2)? n1 : n2;
+    int t2 = n1 + n2 - t1;
+    n1 = t1;
+    n2 = t2;
+}
+
+int sort3( int &n1, int &n2, int &n3 ){
+    int t[3];
+    t[0] = n1;
+    t[1] = n2;
+    t[2] = n3;
+    std::sort(t, t+3);
+    n1 = t[0];
+    n2 = t[1];
+    n3 = t[2];
+}
+
+void put_to_tabu_list(std::queue<int> &ban_q, std::set<int> &ban_s, int tabu_size, int key){
+    if( ban_q.size() == tabu_size ){
+        ban_s.erase(ban_q.front());
+        ban_q.pop();
+    }
+    ban_q.push(key);
+    ban_s.insert(key);    
+}
+
 
 
 /*
