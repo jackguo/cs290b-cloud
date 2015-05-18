@@ -279,11 +279,11 @@ void tabu_search(){
         if( flip_new_edge_only ){
             j = gsize - 1;
             for(i=0; i<gsize-1; i++){
-                ra1 = rand() % 2;
-                if(ra1 == 0){
+                //ra1 = rand() % 2;
+                //if(ra1 == 0){
 
                     flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, true);
-                }
+                //}
             }
 
 
