@@ -58,7 +58,7 @@ void flip_2_edge( int *g, int gsize, std::set<int> &ban_s, int &best_cnt, int *r
 
     int k = 0;
 
-    int goal = (flip_new_edge_only)? gsize/3 : gsize;
+    int goal = (flip_new_edge_only)? gsize/3 : gsize + gsize;
     while( k < goal ){
         if(flip_new_edge_only){
             e[0] = getRandNewEdge(gsize);
@@ -297,7 +297,7 @@ void tabu_search(){
             */
             for(i=0; i<gsize; i++){
                 for(j=i+1; j<gsize; j++){
-                    ra1 = rand() % 50;
+                    ra1 = rand() % 20;
                     if(ra1 == 0){
                         flip_1_edge(g, gsize, i, j, ban_s, best_K, best_start, best_count, false);
                     }
