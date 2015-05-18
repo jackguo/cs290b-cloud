@@ -58,7 +58,7 @@ void flip_2_edge( int *g, int gsize, std::set<int> &ban_s, int &best_cnt, int *r
 
     int k = 0;
 
-    int goal = (flip_new_edge_only)? gsize/2 : gsize;
+    int goal = (flip_new_edge_only)? gsize/4 : gsize/2;
     while( k < goal ){
         if(flip_new_edge_only){
             e[0] = getRandNewEdge(gsize);
