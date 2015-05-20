@@ -165,7 +165,7 @@ void tabu_search(){
     /*
     start with a graph of size 8
     */
-    if( !ReadGraph("109.ce", &g, &gsize) ){
+    if( !ReadGraph("113.ce", &g, &gsize) ){
         fprintf(stderr, "cannot read\n" );
         fflush(stderr);
         exit(1);
@@ -178,7 +178,7 @@ void tabu_search(){
     int tabu_size;
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 10;
+    int stuck_threshold = 18;
 
 
     /*
