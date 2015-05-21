@@ -178,7 +178,7 @@ void tabu_search(){
     int tabu_size;
     int stuck_num;
     int stuck_cnt;
-    int stuck_threshold = 18;
+    int stuck_threshold = 8;
 
 
     /*
