@@ -44,7 +44,7 @@ int ReadGraph( char const *fname, int **g, int *gsize ){
     FILE *fd;
     int lsize;
     int *lg;
-    char line_buff[255];
+    char line_buff[500];
     char *curr;
     char *err;
     char *tempc;
@@ -58,7 +58,7 @@ int ReadGraph( char const *fname, int **g, int *gsize ){
         return(0);
     }
 
-    fgets(line_buff,254,fd);
+    fgets(line_buff,499,fd);
     if(feof(fd))
     {
         fprintf(stderr,"ReadGraph eof on size\n");
@@ -67,7 +67,7 @@ int ReadGraph( char const *fname, int **g, int *gsize ){
         return(0);
     }   
     i = 0;
-    while((i < 254) && !isdigit(line_buff[i]))
+    while((i < 499) && !isdigit(line_buff[i]))
         i++;
     
     /*
@@ -106,7 +106,7 @@ int ReadGraph( char const *fname, int **g, int *gsize ){
         {
             break;
         }
-        err = fgets(line_buff,254,fd);
+        err = fgets(line_buff,499,fd);
         if(err == NULL)
         {
             break;
