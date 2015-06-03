@@ -1,5 +1,8 @@
+Socket C++ Wrapper class
+
+
 at:
-./oop/examples/
+/examples/
 use:
 [sender.cpp] and [receiver.cpp]
 should work.
