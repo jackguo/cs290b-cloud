@@ -16,7 +16,7 @@ All DB necessary functions
 
 class GraphStore {
 private:
-	sqdb::Db db("db.sdb");
+  sqdb::Db db;
 	int max_graph = 0;
 
 
@@ -30,7 +30,7 @@ public:
 };
 
 
-GraphStore::GraphStore(){
+GraphStore::GraphStore() : db("db.sdb") {
 	srand( time(0) );
 	if( !db.TableExists("graphs") ){
 		/*
@@ -68,7 +68,7 @@ bool GraphStore::has_size( int gsize ){
 put a graph into DB
 */
 void GraphStore::put( int gsize, char *g ){
-
+  std::string sql0;
 	if( has_size(gsize) ){
 		/*
 		need modify this?
@@ -86,7 +86,6 @@ void GraphStore::put( int gsize, char *g ){
 		/*
 		insert a row in table Graphs
 		*/
-		std::string sql0;
 		sql0 = "insert into graphs (size, num) values (" + num2str(gsize) + ", 1);";
 		db.Query( sql0.c_str() ).Next();
 
