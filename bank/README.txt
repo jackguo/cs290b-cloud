@@ -1,5 +1,2 @@
-to use sqdb (C++ wrapper for sqlite3), need the following fomat:
-g++ -l sqlite3 sqdb.cpp bank.cpp -o bank
-
-to use GraphStore.h (extended initializer), also need the flag:
--std=c++11
+To compile, run
+g++ -std=c++11 sqdb.cpp bank.cpp -l sqlite3 -o bank
