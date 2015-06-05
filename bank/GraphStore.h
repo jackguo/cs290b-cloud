@@ -12,13 +12,15 @@ All DB necessary functions
 #include <sstream>
 
 #include "sqdb.h"
-
+extern "C" {
+  #include "isomorph.h"
+}
 
 class GraphStore {
 private:
   sqdb::Db db;
-	int max_graph = 0;
-
+  int max_graph = 0;
+  bool to_matrix(const std::string &graph, int * matrix, int size);
 
 public:
 	GraphStore();
@@ -63,6 +65,24 @@ bool GraphStore::has_size( int gsize ){
 	return gsize <= max_graph && gsize > 0;
 }
 
+bool GraphStore::to_matrix(const std::string & graph, int * matrix, int size) {
+
+  if (size != graph.length()) { // size doesn't match graph size!
+    return false; 
+  }
+  
+  for (int i = 0; i < size; i++) {
+    if (graph[i] == '0') {
+      matrix[i] = 0;
+    } else if (graph[i] == '1') {
+      matrix[i] = 1;
+    } else {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 /*
 put a graph into DB
@@ -70,15 +90,31 @@ put a graph into DB
 void GraphStore::put( int gsize, char *g ){
   std::string sql0;
 	if( has_size(gsize) ){
-		/*
-		need modify this?
-		isomorphic check?
-		*/
+                int *g1 = new int[gsize];
+                int *g2 = new int[gsize];
+
 		std::string tb_name = "graph" + num2str(gsize);
 		std::string graph_bit(g);
+                
+		// isomorphic check
+                to_matrix(graph_bit, g1, gsize);
+                
+                sql0 = "select * from " + tb_name;
+                sqdb::Statement s = db.Query(sql0.c_str());
+                int iso;
+                
+                while (s.Next()) {
+                  std::string graph = s.GetField(1);
+                  to_matrix(graph, g2, gsize);
+                  iso = IsIsomorph(g1, g2, gsize);
+                  if (iso == 1) {
+                    return;
+                  }
+                }
+                // check done
+
 		sql0 = "insert into " + tb_name + "(graph) values ( '" + graph_bit + "') ;";
 		db.Query( sql0.c_str() ).Next();
-
 
 	}
 	else{

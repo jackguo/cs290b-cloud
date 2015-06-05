@@ -11,7 +11,6 @@ simple scheduler
 #include "../socket/Socket.hpp"
 #include "GraphStore.h"
 
-
 #define PORT 12345
 #define CHUNKSIZE 44100 //210 * 210
 
@@ -34,9 +33,6 @@ int getNum( char *buf ){
 
 	return num;
 }
-
-
-
 
 int main(){
 
